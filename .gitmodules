@@ -25,3 +25,6 @@
 [submodule "vendors/sispopc"]
 	path = external/sispopc
 	url = https://github.com/syssiproject/sispop-encoding
+[submodule "vendors/sispop-mq"]
+	path = external/sispop-mq
+	url = https://github.com/syssiproject/sispop-mq
