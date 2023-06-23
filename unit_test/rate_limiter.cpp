@@ -1,17 +1,17 @@
-#include <oxenss/rpc/rate_limiter.h>
-#include <oxenss/crypto/keys.h>
+#include <sispopss/rpc/rate_limiter.h>
+#include <sispopss/crypto/keys.h>
 
 #include <catch2/catch.hpp>
-#include <oxenmq/oxenmq.h>
+#include <sispopmq/sispopmq.h>
 
 #include <chrono>
 
-using oxen::rpc::RateLimiter;
-using namespace oxen::crypto;
+using sispop::rpc::RateLimiter;
+using namespace sispop::crypto;
 using namespace std::literals;
 
 TEST_CASE("rate limiter - snode - empty bucket", "[ratelim][snode]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     auto identifier = legacy_pubkey::from_hex(
             "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abc000");
@@ -28,7 +28,7 @@ TEST_CASE("rate limiter - snode - empty bucket", "[ratelim][snode]") {
 }
 
 TEST_CASE("rate limiter - snode - steady bucket fillup", "[ratelim][snode]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     auto identifier = legacy_pubkey::from_hex(
             "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abc000");
@@ -41,7 +41,7 @@ TEST_CASE("rate limiter - snode - steady bucket fillup", "[ratelim][snode]") {
 }
 
 TEST_CASE("rate limiter - snode - multiple identifiers", "[ratelim][snode]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     auto identifier1 = legacy_pubkey::from_hex(
             "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abc000");
@@ -59,7 +59,7 @@ TEST_CASE("rate limiter - snode - multiple identifiers", "[ratelim][snode]") {
 }
 
 TEST_CASE("rate limiter - client - empty bucket", "[ratelim][client]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     uint32_t identifier = (10 << 24) + (1 << 16) + (1 << 8) + 13;
     const auto now = std::chrono::steady_clock::now();
@@ -75,7 +75,7 @@ TEST_CASE("rate limiter - client - empty bucket", "[ratelim][client]") {
 }
 
 TEST_CASE("rate limiter - client - steady bucket fillup", "[ratelim][client]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     uint32_t identifier = (10 << 24) + (1 << 16) + (1 << 8) + 13;
     const auto now = std::chrono::steady_clock::now();
@@ -87,7 +87,7 @@ TEST_CASE("rate limiter - client - steady bucket fillup", "[ratelim][client]") {
 }
 
 TEST_CASE("rate limiter - client - multiple identifiers", "[ratelim][client]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     uint32_t identifier1 = (10 << 24) + (1 << 16) + (1 << 8) + 13;
     const auto now = std::chrono::steady_clock::now();
@@ -103,7 +103,7 @@ TEST_CASE("rate limiter - client - multiple identifiers", "[ratelim][client]") {
 }
 
 TEST_CASE("rate limiter - client - max client limit", "[ratelim][client]") {
-    oxenmq::OxenMQ omq;
+    sispopmq::SispopMQ omq;
     RateLimiter rate_limiter{omq};
     const auto now = std::chrono::steady_clock::now();
 

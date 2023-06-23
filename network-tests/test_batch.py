@@ -8,7 +8,7 @@ from nacl.hash import blake2b
 from hashlib import sha512
 from nacl.signing import SigningKey, VerifyKey
 import nacl.bindings as sodium
-from oxenc import bt_serialize, bt_deserialize
+from sispopc import bt_serialize, bt_deserialize
 
 
 def test_batch_json(omq, random_sn, sk, exclude):

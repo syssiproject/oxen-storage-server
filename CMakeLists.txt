@@ -12,7 +12,7 @@ endif()
 
 cmake_minimum_required(VERSION 3.13)
 
-project(oxenss
+project(sispopss
     VERSION 2.5.0
     LANGUAGES CXX C)
 
@@ -72,9 +72,9 @@ else()
   endfunction ()
 
   message(STATUS "Checking submodules")
-  check_submodule(external/oxenc)
-  check_submodule(external/oxen-mq cppzmq)
-  check_submodule(external/oxen-logging fmt spdlog)
+  check_submodule(external/sispopc)
+  check_submodule(external/sispop-mq cppzmq)
+  check_submodule(external/sispop-logging fmt spdlog)
   check_submodule(external/nlohmann_json)
   check_submodule(external/uWebSockets uSockets)
   check_submodule(external/cpr)
@@ -102,7 +102,7 @@ include(cmake/check_for_std_filesystem.cmake)
 
 add_subdirectory(external)
 
-add_subdirectory(oxenss)
+add_subdirectory(sispopss)
 
 
 if (BUILD_TESTS)
@@ -111,7 +111,7 @@ endif ()
 
 add_executable(onion-request EXCLUDE_FROM_ALL contrib/onion-request.cpp)
 set_target_properties(onion-request PROPERTIES RUNTIME_OUTPUT_DIRECTORY contrib)
-target_link_libraries(onion-request common crypto cpr::cpr oxenmq::oxenmq)
+target_link_libraries(onion-request common crypto cpr::cpr sispopmq::sispopmq)
 target_include_directories(onion-request PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(cmake/archive.cmake)

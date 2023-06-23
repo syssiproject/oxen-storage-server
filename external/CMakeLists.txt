@@ -33,7 +33,7 @@ if(NOT TARGET sodium)
     target_link_libraries(sodium INTERFACE sodium_vendor)
   endif()
 
-  # Need this target export so that oxenmq properly picks up sodium
+  # Need this target export so that sispopmq properly picks up sodium
   export(TARGETS sodium NAMESPACE sodium:: FILE sodium-exports.cmake)
 endif()
 
@@ -60,18 +60,18 @@ macro(system_or_submodule BIGNAME smallname pkgconf subdir)
   endif()
 endmacro()
 
-system_or_submodule(OXENC oxenc liboxenc>=1.0.4 oxenc)
-system_or_submodule(OXENMQ oxenmq liboxenmq>=1.2.13 oxen-mq)
+system_or_submodule(SISPOPC sispopc libsispopc>=1.0.4 sispopc)
+system_or_submodule(SISPOPMQ sispopmq libsispopmq>=1.2.13 sispop-mq)
 set(JSON_MultipleHeaders ON CACHE BOOL "") # Allows multi-header nlohmann use
 system_or_submodule(NLOHMANN nlohmann_json nlohmann_json>=3.7.0 nlohmann_json)
 system_or_submodule(CLI11 CLI11 CLI11>=2.2.0 CLI11)
 
 
 if (STATIC OR FORCE_SPDLOG_SUBMODULE OR FORCE_FMT_SUBMODULE)
-    set(OXEN_LOGGING_FORCE_SUBMODULES ON CACHE INTERNAL "")
+    set(SISPOP_LOGGING_FORCE_SUBMODULES ON CACHE INTERNAL "")
 endif()
-set(OXEN_LOGGING_SOURCE_ROOT "${PROJECT_SOURCE_DIR}/oxenss" CACHE INTERNAL "")
-add_subdirectory(oxen-logging)
+set(SISPOP_LOGGING_SOURCE_ROOT "${PROJECT_SOURCE_DIR}/sispopss" CACHE INTERNAL "")
+add_subdirectory(sispop-logging)
 
 
 # uSockets doesn't really have a proper build system (just a very simple Makefile) so build it

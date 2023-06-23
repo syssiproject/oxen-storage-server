@@ -1,0 +1,13 @@
+#include "sispopss/version.h"
+
+namespace sispop {
+
+using namespace std::literals;
+
+const std::array<uint16_t, 3> STORAGE_SERVER_VERSION = {@sispopss_VERSION_MAJOR@, @sispopss_VERSION_MINOR@, @sispopss_VERSION_PATCH@};
+
+const std::string_view STORAGE_SERVER_VERSION_STRING = "@sispopss_VERSION@"sv;
+const std::string_view STORAGE_SERVER_GIT_HASH_STRING = "@VERSIONTAG@"sv;
+const std::string_view STORAGE_SERVER_VERSION_INFO = "Sispop Storage Server v@sispopss_VERSION@ (@VERSIONTAG@)"sv;
+
+}

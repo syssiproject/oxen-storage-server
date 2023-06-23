@@ -27,7 +27,7 @@ def make_subkey(sk, subuser_or_raw: Union[VerifyKey, bytes]):
         sodium.crypto_core_ed25519_scalar_add(
             c,
             blake2b(
-                c + sk.verify_key.encode(), key=b'OxenSSSubkey', digest_size=32, encoder=RawEncoder
+                c + sk.verify_key.encode(), key=b'SispopSSSubkey', digest_size=32, encoder=RawEncoder
             ),
         ),
     )

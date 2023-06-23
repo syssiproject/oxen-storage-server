@@ -21,18 +21,18 @@ chmod 600 ssh_key
 
 branch_or_tag=${DRONE_BRANCH:-${DRONE_TAG:-unknown}}
 
-upload_to="oxen.rocks/${DRONE_REPO// /_}/${branch_or_tag// /_}"
+upload_to="sispop.rocks/${DRONE_REPO// /_}/${branch_or_tag// /_}"
 
 filename=
-for f in oxen-storage-*.tar.xz oxen-storage-*.zip; do
-    if [[ $f != oxen-storage-\** ]]; then
+for f in sispop-storage-*.tar.xz sispop-storage-*.zip; do
+    if [[ $f != sispop-storage-\** ]]; then
         filename=$f
         break
     fi
 done
 
 if [ -z "$filename" ]; then
-    echo "Did not find expected oxen-storage-*.tar.xz or .zip!"
+    echo "Did not find expected sispop-storage-*.tar.xz or .zip!"
     ls -l
     exit 1
 fi
@@ -49,7 +49,7 @@ for p in "${upload_dirs[@]}"; do
 -mkdir $dir_tmp"
 done
 
-sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@oxen.rocks <<SFTP
+sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@sispop.rocks <<SFTP
 $mkdirs
 put $filename $upload_to
 SFTP

@@ -10,8 +10,8 @@ import nacl.bindings as sodium
 import json
 import base64
 
-import oxenmq
-from oxenc import bt_serialize, bt_deserialize
+import sispopmq
+from sispopc import bt_serialize, bt_deserialize
 
 
 def notify_request(
@@ -56,12 +56,12 @@ def notify_request(
 def test_monitor_reg_ed(omq, random_sn, sk, exclude):
     swarm = ss.get_swarm(omq, random_sn, sk)
 
-    o = oxenmq.OxenMQ()
+    o = sispopmq.SispopMQ()
     o.start()
     ts = int(time.time())
     registered = []
     for snode in swarm['snodes']:
-        snode['addr'] = oxenmq.Address(
+        snode['addr'] = sispopmq.Address(
             f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"
         )
         c = o.connect_remote(
@@ -87,12 +87,12 @@ def test_monitor_reg_ed(omq, random_sn, sk, exclude):
 def test_monitor_reg_session(omq, random_sn, sk, exclude):
     swarm = ss.get_swarm(omq, random_sn, sk)
 
-    o = oxenmq.OxenMQ()
+    o = sispopmq.SispopMQ()
     o.start()
     ts = int(time.time())
     registered = []
     for snode in swarm['snodes']:
-        snode['addr'] = oxenmq.Address(
+        snode['addr'] = sispopmq.Address(
             f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"
         )
         c = o.connect_remote(
@@ -120,12 +120,12 @@ def test_monitor_reg_subkey(omq, random_sn, sk, exclude):
 
     # Highly random subkey tag:
     subk = b'abcdefghijklmnopqrstuvwxyzomg123'
-    o = oxenmq.OxenMQ()
+    o = sispopmq.SispopMQ()
     o.start()
     ts = int(time.time())
     registered = []
     for snode in swarm['snodes']:
-        snode['addr'] = oxenmq.Address(
+        snode['addr'] = sispopmq.Address(
             f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"
         )
         c = o.connect_remote(
@@ -163,9 +163,9 @@ def test_monitor_push(omq, random_sn, sk, exclude):
         n_notifies += 1
 
     # We need to make our own OMQ because we need to add the cat/command for notifies
-    o = oxenmq.OxenMQ()
+    o = sispopmq.SispopMQ()
     o.max_message_size = 10 * 1024 * 1024
-    notify = o.add_category('notify', oxenmq.AuthLevel.none)
+    notify = o.add_category('notify', sispopmq.AuthLevel.none)
     notify.add_command("message", handle_notify_message)
     o.start()
 
@@ -174,7 +174,7 @@ def test_monitor_push(omq, random_sn, sk, exclude):
     for snode in swarm['snodes']:
         snode['response'] = []
         c = o.connect_remote(
-            oxenmq.Address(f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"),
+            sispopmq.Address(f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"),
             on_success=lambda conn: connected.add(conn),
             on_failure=lambda _, msg: print(f"Connection failed: {msg}"),
         )
@@ -286,9 +286,9 @@ def test_monitor_multi(omq, random_sn, sk, exclude):
         n_notifies += 1
 
     # We need to make our own OMQ because we need to add the cat/command for notifies
-    o = oxenmq.OxenMQ()
+    o = sispopmq.SispopMQ()
     o.max_message_size = 10 * 1024 * 1024
-    notify = o.add_category('notify', oxenmq.AuthLevel.none)
+    notify = o.add_category('notify', sispopmq.AuthLevel.none)
     notify.add_command("message", handle_notify_message)
     o.start()
 
@@ -297,7 +297,7 @@ def test_monitor_multi(omq, random_sn, sk, exclude):
     for snode in swarm['snodes']:
         snode['response'] = []
         c = o.connect_remote(
-            oxenmq.Address(f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"),
+            sispopmq.Address(f"curve://{snode['ip']}:{snode['port_omq']}/{snode['pubkey_x25519']}"),
             on_success=lambda conn: connected.add(conn),
             on_failure=lambda _, msg: print(f"Connection failed: {msg}"),
         )

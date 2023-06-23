@@ -2,11 +2,11 @@
 #include <iostream>
 #include <ostream>
 
-#include <oxenss/crypto/channel_encryption.hpp>
-#include <oxenss/crypto/keys.h>
+#include <sispopss/crypto/channel_encryption.hpp>
+#include <sispopss/crypto/keys.h>
 
 using namespace std::literals;
-using namespace oxen::crypto;
+using namespace sispop::crypto;
 
 constexpr auto plaintext_data = "Grumpy cat says no!"sv;
 

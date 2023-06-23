@@ -24,7 +24,7 @@ class catch_sink : public spdlog::sinks::base_sink<std::mutex> {
 };
 
 int main(int argc, char* argv[]) {
-    auto logger = std::make_shared<spdlog::logger>("oxen_logger", std::make_shared<catch_sink>());
+    auto logger = std::make_shared<spdlog::logger>("sispop_logger", std::make_shared<catch_sink>());
     logger->set_level(spdlog::level::debug);
     spdlog::register_logger(logger);
 

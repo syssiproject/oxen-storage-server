@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Script used with Drone CI to check that a statically build oxen only links against the expected
+# Script used with Drone CI to check that a statically build sispop only links against the expected
 # base system libraries.  Expects to be run with pwd of the build directory.
 
 set -o errexit
 
 anybad=
-for bin in oxen-storage; do
+for bin in sispop-storage; do
     bad=
     if [ "$DRONE_STAGE_OS" == "darwin" ]; then
         if otool -L $bin | grep -Ev '^'$bin':|^\s*(/usr/lib/libSystem\.|/usr/lib/libc\+\+\.|/usr/lib/libresolv\.|/System/Library/Frameworks/(CoreFoundation|IOKit|Security|SystemConfiguration))'; then

@@ -2,25 +2,25 @@
 //
 // This makes onion requests via storage servers.
 //
-// It has a whole bunch of deps (cpr, oxenmq, sodium, ssl, nlohmann); I compiled with the following,
-// using static cpr from an oxen-core build, SS assets built in ../build, and system-installed
-// libsodium/libssl/nlohmann/oxenmq:
+// It has a whole bunch of deps (cpr, sispopmq, sodium, ssl, nlohmann); I compiled with the following,
+// using static cpr from an sispop-core build, SS assets built in ../build, and system-installed
+// libsodium/libssl/nlohmann/sispopmq:
 //
-//     g++ -std=c++17 -O2 onion-request.cpp -o onion-request ../../oxen-core/build/external/libcpr.a \
-//          -I../../oxen-core/external/cpr/include ../build/crypto/libcrypto.a -loxenmq -lsodium -lcurl -lcrypto
+//     g++ -std=c++17 -O2 onion-request.cpp -o onion-request ../../sispop-core/build/external/libcpr.a \
+//          -I../../sispop-core/external/cpr/include ../build/crypto/libcrypto.a -lsispopmq -lsodium -lcurl -lcrypto
 //
 
-#include <oxenss/crypto/channel_encryption.hpp>
-#include <oxenss/crypto/keys.h>
+#include <sispopss/crypto/channel_encryption.hpp>
+#include <sispopss/crypto/keys.h>
 #include <cpr/cpr.h>
 #include <chrono>
 #include <exception>
 #include <iostream>
 #include <random>
 #include <sodium.h>
-#include <oxenc/hex.h>
-#include <oxenc/base64.h>
-#include <oxenmq/oxenmq.h>
+#include <sispopc/hex.h>
+#include <sispopc/base64.h>
+#include <sispopmq/sispopmq.h>
 #include <nlohmann/json.hpp>
 
 extern "C" {
@@ -29,8 +29,8 @@ extern "C" {
 
 using namespace std::literals;
 
-using namespace oxen;
-using namespace oxen::crypto;
+using namespace sispop;
+using namespace sispop::crypto;
 
 int usage(std::string_view argv0, std::string_view err = "") {
     if (!err.empty())
@@ -47,13 +47,13 @@ SNODE_PK should be primary (legacy) pubkey(s) on test (or mainnet if --mainnet i
 
 PAYLOAD/CONTROL are values to pass to the request and should be:
 
-Onion requests for SS and oxend:
+Onion requests for SS and sispopd:
 
     Pass '{"headers":[]}' for CONTROL
 
-    PAYLOAD should be the JSON data; for example for an oxend request:
+    PAYLOAD should be the JSON data; for example for an sispopd request:
 
-        {"method": "oxend_request", "params": {"endpoint": "get_service_nodes", "params": {"limit": 5}}}
+        {"method": "sispopd_request", "params": {"endpoint": "get_service_nodes", "params": {"limit": 5}}}
 
     and for a swarm member lookup:
 
@@ -62,7 +62,7 @@ Onion requests for SS and oxend:
 Proxy requests should have an whatever data is to be posted in the PAYLOAD string and CONTROL set to
 the connection details such as:
 
-        {"host": "jagerman.com", "target": "/oxen/lsrpc"}
+        {"host": "jagerman.com", "target": "/sispop/lsrpc"}
 
 Both PAYLOAD and CONTROL may be passed filenames to read prefixed with `@` (for example:
 @payload.data, @/path/to/control.json)
@@ -71,8 +71,8 @@ Both PAYLOAD and CONTROL may be passed filenames to read prefixed with `@` (for 
     return 1;
 }
 
-const oxenmq::address TESTNET_OMQ{"tcp://public.loki.foundation:9999"};
-const oxenmq::address MAINNET_OMQ{"tcp://public.loki.foundation:22029"};
+const sispopmq::address TESTNET_OMQ{"tcp://public.sispop.site:9999"};
+const sispopmq::address MAINNET_OMQ{"tcp://public-1.sispop.site:22029"};
 
 void onion_request(std::string ip, uint16_t port, std::vector<std::pair<ed25519_pubkey, x25519_pubkey>> keys,
         bool mainnet, std::optional<EncryptType> enc_type, std::string_view payload, std::string_view control);
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         if (arg == "--aes-cbc"sv) { enc_type = EncryptType::aes_cbc; continue; }
         if (arg == "--random"sv) { enc_type = std::nullopt; continue; }
 
-        bool hex = arg.size() > 0 && oxenc::is_hex(arg);
+        bool hex = arg.size() > 0 && sispopc::is_hex(arg);
         if (i >= argc - 2) {
             if (hex)
                 return usage(argv[0], "Missing PAYLOAD and CONTROL values");
@@ -117,14 +117,14 @@ int main(int argc, char** argv) {
     }
     if (pubkeys.empty()) return usage(argv[0]);
 
-    oxenmq::OxenMQ omq{};
+    sispopmq::SispopMQ omq{};
     omq.start();
     std::promise<void> got;
     auto got_fut = got.get_future();
     auto rpc = omq.connect_remote(omq_addr,
             [](auto) {},
             [&got, omq_addr](auto, auto err) {
-                try { throw std::runtime_error{"Failed to connect to oxend @ " + omq_addr.full_address() + ": " + std::string{err}}; }
+                try { throw std::runtime_error{"Failed to connect to sispopd @ " + omq_addr.full_address() + ": " + std::string{err}}; }
                 catch (...) { got.set_exception(std::current_exception()); }
             });
     std::string first_ip;
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
                 auto& pk = sn.at("service_node_pubkey").get_ref<const std::string&>();
                 auto& e = sn.at("pubkey_ed25519").get_ref<const std::string&>();
                 auto& x = sn.at("pubkey_x25519").get_ref<const std::string&>();
-                if (e.size() != 64 || x.size() != 64 || !oxenc::is_hex(x) || !oxenc::is_hex(e))
+                if (e.size() != 64 || x.size() != 64 || !sispopc::is_hex(x) || !sispopc::is_hex(e))
                     throw std::runtime_error{sn.at("service_node_pubkey").get<std::string>() + " is missing ed/x25519 pubkeys"};
                 aux_keys.emplace(legacy_pubkey::from_hex(pk),
                         std::make_pair(ed25519_pubkey::from_hex(e), x25519_pubkey::from_hex(x)));
@@ -232,7 +232,7 @@ void onion_request(std::string ip, uint16_t port, std::vector<std::pair<ed25519_
     //   node as the final hop, and means that the BLOB is actually JSON it should parse to get the
     //   request info (which has "method", "params", etc. in it).
     // - "host"/"target"/"port"/"protocol" asking for an HTTP or HTTPS proxy request to be made
-    //   (though "target" must start with /loki/ or /oxen/ and end with /lsrpc).  (There is still a
+    //   (though "target" must start with /loki/ or /sispop/ and end with /lsrpc).  (There is still a
     //   blob here, but it is not used and typically empty).
     // - "destination" and "ephemeral_key" to forward the request to the next hop.
     //
@@ -241,8 +241,8 @@ void onion_request(std::string ip, uint16_t port, std::vector<std::pair<ed25519_
     //      {"destination":"ed25519pubkey","ephemeral_key":"x25519-eph-pubkey-for-decryption","enc_type":"xchacha20"}
     //
     // (enc_type can also be aes-gcm, and defaults to that if not specified).  We forward this via
-    // oxenmq to the given ed25519pubkey (but since oxenmq uses x25519 pubkeys we first have to go
-    // look it up), sending an oxenmq request to sn.onion_req_v2 of the following (but bencoded, not
+    // sispopmq to the given ed25519pubkey (but since sispopmq uses x25519 pubkeys we first have to go
+    // look it up), sending an sispopmq request to sn.onion_req_v2 of the following (but bencoded, not
     // json):
     //
     //  { "d": "BLOB", "ek": "ephemeral-key-in-binary", "et": "xchacha20", "nh": N }
@@ -338,8 +338,8 @@ void onion_request(std::string ip, uint16_t port, std::vector<std::pair<ed25519_
 
     if (decrypted) {
         std::cerr << "Body is " << orig_size << " encrypted bytes, decrypted to " << body.size() << " bytes:\n";
-    } else if (oxenc::is_base64(body)) {
-        body = oxenc::from_base64(body);
+    } else if (sispopc::is_base64(body)) {
+        body = sispopc::from_base64(body);
         std::cerr << "Body was " << orig_size << " base64 bytes; decoded to " << body.size() << " bytes";
         try { body = d.decrypt(final_etype, body, keys.back().second); decrypted = true; }
         catch (...) {}

@@ -12,7 +12,7 @@ local default_deps_base = [
 ];
 local default_deps_nocxx = ['libsodium-dev'] + default_deps_base;  // libsodium-dev needs to be >= 1.0.18
 local default_deps = ['g++'] + default_deps_nocxx;  // g++ sometimes needs replacement
-local docker_base = 'registry.oxen.rocks/lokinet-ci-';
+local docker_base = 'registry.sispop.rocks/lokinet-ci-';
 
 local submodules_commands = ['git fetch --tags', 'git submodule update --init --recursive --depth=1 --jobs=4'];
 local submodules = {
@@ -35,12 +35,12 @@ local debian_pipeline(name,
                       werror=true,
                       build_tests=true,
                       run_tests=true,  // Runs full test suite
-                      test_oxen_storage=true,  // Makes sure oxen-storage --version runs
+                      test_sispop_storage=true,  // Makes sure sispop-storage --version runs
                       cmake_extra='',
                       extra_cmds=[],
                       extra_steps=[],
                       jobs=6,
-                      oxen_repo=false,
+                      sispop_repo=false,
                       allow_fail=false) = {
   kind: 'pipeline',
   type: 'docker',
@@ -60,10 +60,10 @@ local debian_pipeline(name,
                   apt_get_quiet + ' update',
                   apt_get_quiet + ' install -y eatmydata',
                 ] + (
-                  if oxen_repo then [
+                  if sispop_repo then [
                     'eatmydata ' + apt_get_quiet + ' install --no-install-recommends -y lsb-release',
-                    'cp contrib/deb.oxen.io.gpg /etc/apt/trusted.gpg.d',
-                    'echo deb http://deb.oxen.io $$(lsb_release -sc) main >/etc/apt/sources.list.d/oxen.list',
+                    'cp contrib/deb.sispop.io.gpg /etc/apt/trusted.gpg.d',
+                    'echo deb http://deb.sispop.io $$(lsb_release -sc) main >/etc/apt/sources.list.d/sispop.list',
                     'eatmydata ' + apt_get_quiet + ' update',
                   ] else []
                 ) + [
@@ -73,12 +73,12 @@ local debian_pipeline(name,
                   'mkdir build',
                   'cd build',
                   'cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE=' + build_type
-                  + ' -DLOCAL_MIRROR=https://oxen.rocks/deps -DEXTRA_WARNINGS=ON '
+                  + ' -DLOCAL_MIRROR=https://sispop.rocks/deps -DEXTRA_WARNINGS=ON '
                   + cmake_options({ USE_LTO: lto, WARNINGS_AS_ERRORS: werror, BUILD_TESTS: build_tests || run_tests })
                   + cmake_extra,
                   'ninja -j' + jobs + ' -v',
                 ] +
-                (if test_oxen_storage then ['./oxen-storage --version'] else []) +
+                (if test_sispop_storage then ['./sispop-storage --version'] else []) +
                 (if run_tests then ['./unit_test/Test'] else []) +
                 extra_cmds,
     },
@@ -100,7 +100,7 @@ local mac_builder(name,
                   werror=true,
                   build_tests=true,
                   run_tests=true,
-                  test_oxen_storage=true,  // Makes sure oxen-storage --version runs
+                  test_sispop_storage=true,  // Makes sure sispop-storage --version runs
                   cmake_extra='',
                   extra_cmds=[],
                   extra_steps=[],
@@ -122,12 +122,12 @@ local mac_builder(name,
                   'mkdir build',
                   'cd build',
                   'cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-fcolor-diagnostics -DCMAKE_BUILD_TYPE=' + build_type
-                  + ' -DLOCAL_MIRROR=https://oxen.rocks/deps -DEXTRA_WARNINGS=ON '
+                  + ' -DLOCAL_MIRROR=https://sispop.rocks/deps -DEXTRA_WARNINGS=ON '
                   + cmake_options({ USE_LTO: lto, WARNINGS_AS_ERRORS: werror, BUILD_TESTS: build_tests || run_tests })
                   + cmake_extra,
                   'ninja -j' + jobs + ' -v',
                 ] +
-                (if test_oxen_storage then ['./oxen-storage --version'] else []) +
+                (if test_sispop_storage then ['./sispop-storage --version'] else []) +
                 (if run_tests then ['./unit_test/Test'] else []) +
                 extra_cmds,
     },
@@ -177,13 +177,13 @@ local static_check_and_upload = [
   debian_pipeline('Debian sid (ARM64)', docker_base + 'debian-sid', arch='arm64'),
   debian_pipeline('Debian stable (armhf)', docker_base + 'debian-stable/arm32v7', arch='arm64'),
 
-  // Static build (on bionic) which gets uploaded to oxen.rocks:
+  // Static build (on bionic) which gets uploaded to sispop.rocks:
   debian_pipeline('Static (bionic amd64)',
                   docker_base + 'ubuntu-bionic',
                   deps=['autoconf', 'automake', 'file', 'g++-8', 'libtool', 'make', 'openssh-client', 'patch', 'pkg-config'],
                   cmake_extra='-DBUILD_STATIC_DEPS=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8',
                   lto=true,
-                  oxen_repo=true,  // for updated cmake
+                  sispop_repo=true,  // for updated cmake
                   extra_cmds=static_check_and_upload),
 
   // Macos builds:

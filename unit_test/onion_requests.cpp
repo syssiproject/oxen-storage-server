@@ -2,10 +2,10 @@
 #include <iostream>
 #include <ostream>
 
-#include <oxenss/rpc/onion_processing.h>
+#include <sispopss/rpc/onion_processing.h>
 
-using namespace oxen::rpc;
-using namespace oxen::crypto;
+using namespace sispop::rpc;
+using namespace sispop::crypto;
 using namespace std::literals;
 
 constexpr const char* ciphertext = "ciphertext";
@@ -91,8 +91,8 @@ TEST_CASE("onion request - relay to snode", "[onion][snode]") {
 
 TEST_CASE("onion request - url target filtering", "[onion][relay]") {
     CHECK(is_onion_url_target_allowed("/loki/v3/lsrpc"));
-    CHECK(is_onion_url_target_allowed("/loki/oxen/v4/lsrpc"));
-    CHECK(is_onion_url_target_allowed("/oxen/v3/lsrpc"));
+    CHECK(is_onion_url_target_allowed("/loki/sispop/v4/lsrpc"));
+    CHECK(is_onion_url_target_allowed("/sispop/v3/lsrpc"));
 
     CHECK_FALSE(is_onion_url_target_allowed("/not_loki/v3/lsrpc"));
     CHECK_FALSE(is_onion_url_target_allowed("/loki/v3"));

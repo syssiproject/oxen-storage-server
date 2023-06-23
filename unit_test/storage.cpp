@@ -1,6 +1,6 @@
-#include <oxenss/storage/database.hpp>
+#include <sispopss/storage/database.hpp>
 
-#include <oxenss/logging/oxen_logger.h>
+#include <sispopss/logging/sispop_logger.h>
 
 #include <chrono>
 #include <filesystem>
@@ -10,7 +10,7 @@
 
 #include <catch2/catch.hpp>
 
-using namespace oxen;
+using namespace sispop;
 
 using namespace std::literals;
 

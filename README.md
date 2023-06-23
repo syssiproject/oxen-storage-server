@@ -1,11 +1,11 @@
-# Oxen Storage Server
+# Sispop Storage Server
 
-Storage server for Oxen Service Nodes
+Storage server for Sispop Service Nodes
 
 ## Binary releases
 
 Pre-built releases (with system service files) are available for Ubuntu/Debian on
-https://deb.oxen.io and are recommended for simple deployment and updates on those distributions.
+https://deb.sispop.io and are recommended for simple deployment and updates on those distributions.
 
 ## Building from source
 
@@ -25,8 +25,8 @@ Other dependencies will be used from the system if found, but if not found will 
 built statically from bundled versions:
 * spdlog >= 1.8
 * libzmq >= 4.3
-* oxen-mq >= 1.2.6
-* oxen-encoding >= 1.0.1
+* sispop-mq >= 1.2.6
+* sispop-encoding >= 1.0.1
 * sqlite >= 3.35.5
 
 You can, however, instruct the build to download and build static versions of all of these
@@ -41,14 +41,14 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j4
 ```
 
-The build will produce a `./build/httpserver/oxen-storage` binary.  You can run it with `--help` to
+The build will produce a `./build/httpserver/sispop-storage` binary.  You can run it with `--help` to
 see supported run-time options.
 
 # Running
 
-Oxen Storage Server is a required component of an Oxen Service Node and needs to talk to a running
-`oxend` in order to join the network.  The program defaults are designed to work with a default
-oxend, but for advanced configurations (e.g. to run on different ports) you may need to use other
+Sispop Storage Server is a required component of an Sispop Service Node and needs to talk to a running
+`sispopd` in order to join the network.  The program defaults are designed to work with a default
+sispopd, but for advanced configurations (e.g. to run on different ports) you may need to use other
 options.  Run the program with `--help` to see all available options.
 
-See https://docs.oxen.io/ for additional details on setting up and running an Oxen Service Node.
+See https://docs.sispop.io/ for additional details on setting up and running an Sispop Service Node.
