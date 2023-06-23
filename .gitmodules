@@ -25,3 +25,6 @@
 [submodule "external/sispop-logging"]
 	path = external/sispop-logging
 	url = https://github.com/syssiproject/sispop-logging
+[submodule "vendors/sispopc"]
+	path = external/sispopc
+	url = https://github.com/syssiproject/sispop-encoding
