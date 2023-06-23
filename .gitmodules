@@ -16,3 +16,12 @@
 [submodule "vendors/CLI11"]
 	path = external/CLI11
 	url = https://github.com/CLIUtils/CLI11
+[submodule "vendors/sispop-mq"]
+	path = external/sispop-mq
+	url = https://github.com/sispop/sispop-mq
+[submodule "vendors/sispopc"]
+	path = external/sispopc
+	url = https://github.com/syssiproject/sispop-encoding
+[submodule "external/sispop-logging"]
+	path = external/sispop-logging
+	url = https://github.com/syssiproject/sispop-logging
